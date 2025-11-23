@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyToken } from '@/lib/auth'
 import { issueTickets } from '@/lib/tickets'
 import { sendMail } from '@/lib/mailer'
+export const runtime = 'nodejs'
 
-export async function POST(req: Request) {
-  const body = await req.json()
+export async function POST(request: NextRequest) {
+  const body = await request.json()
   const { orderId } = body as { orderId: string }
   const order = await prisma.order.findUnique({ where: { id: orderId }, include: { payment: true } })
   if (!order) return NextResponse.json({ error: 'order not found' }, { status: 404 })

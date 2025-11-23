@@ -1,15 +1,16 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyToken } from '@/lib/auth'
+export const runtime = 'nodejs'
 
-export async function GET(req: Request) {
-  const cookie = (req as any).cookies?.get?.('rcc_token')?.value
+export async function GET(request: NextRequest) {
+  const cookie = request.cookies.get('rcc_token')?.value
   const token = cookie || ''
   const data = verifyToken(token)
   if (!data) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   const admin = await prisma.user.findUnique({ where: { id: (data as any).id } })
   if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'forbidden' }, { status: 403 })
-  const { searchParams } = new URL(req.url)
+  const { searchParams } = new URL(request.url)
   const status = searchParams.get('status')
   const type = searchParams.get('type')
   const users = await prisma.user.findMany({ include: { orders: { include: { items: { include: { ticketType: true } }, payment: true } }, tickets: { include: { type: true } } } })

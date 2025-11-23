@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyToken } from '@/lib/auth'
+export const runtime = 'nodejs'
 
-export async function GET(req: Request) {
-  const cookie = (req as any).cookies?.get?.('rcc_token')?.value
+export async function GET(request: NextRequest) {
+  const cookie = request.cookies.get('rcc_token')?.value
   const token = cookie || ''
   const data = verifyToken(token)
   if (!data) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })

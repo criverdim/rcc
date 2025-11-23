@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { issueTickets } from '@/lib/tickets'
+export const runtime = 'nodejs'
 
-export async function GET(req: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const url = new URL(req.url)
+    const url = new URL(request.url)
     const topic = url.searchParams.get('topic') || url.searchParams.get('type')
     const id = url.searchParams.get('id') || url.searchParams.get('data.id')
     if (topic !== 'payment' || !id) return NextResponse.json({ ok: true })

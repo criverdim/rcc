@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hashPassword } from '@/lib/auth'
 import { sendMail } from '@/lib/mailer'
+export const runtime = 'nodejs'
 
-export async function POST(req: Request) {
-  const body = await req.json()
+export async function POST(request: NextRequest) {
+  const body = await request.json()
   const { email } = body as { email: string }
   const user = await prisma.user.findUnique({ where: { email } })
   if (!user) return NextResponse.json({ ok: true })

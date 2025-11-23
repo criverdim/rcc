@@ -1,13 +1,14 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 import { issueTickets } from '@/lib/tickets'
+export const runtime = 'nodejs'
 
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) return NextResponse.json({ ok: true })
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-  const buf = await req.text()
-  const sig = (req as any).headers.get('stripe-signature')
+  const buf = await request.text()
+  const sig = request.headers.get('stripe-signature')
   let event: Stripe.Event
   try {
     event = stripe.webhooks.constructEvent(buf, sig as string, process.env.STRIPE_WEBHOOK_SECRET)
