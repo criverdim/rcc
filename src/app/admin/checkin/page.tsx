@@ -4,7 +4,7 @@ import { useEffect } from "react"
 
 export default function Checkin() {
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner('reader', { fps: 10, qrbox: 250 })
+    const scanner = new Html5QrcodeScanner('reader', { fps: 10, qrbox: { width: 250, height: 250 } }, false)
     scanner.render(async (text) => {
       await fetch('/api/admin/checkin', { method: 'POST', body: JSON.stringify({ qrCode: text }) })
     }, () => {})

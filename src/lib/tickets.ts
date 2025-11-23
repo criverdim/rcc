@@ -23,7 +23,8 @@ export async function ticketPdf(ticketId: string) {
   const doc = new PDFDocument({ size: 'A4' })
   const chunks: Buffer[] = []
   doc.on('data', d => chunks.push(d))
-  const qrPng = await QRCode.toBuffer(ticket.qrCode.replace(/^data:image\/png;base64,/, ''), { type: 'png' } as any)
+  const base64 = ticket.qrCode.split(',')[1]
+  const qrPng = Buffer.from(base64, 'base64')
   doc.fontSize(20).text('Retiro de Carnaval - Ingresso')
   doc.moveDown()
   doc.fontSize(14).text(`Nome: ${ticket.user.name}`)

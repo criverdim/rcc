@@ -28,7 +28,7 @@ export async function createPayment(input: CreatePaymentInput) {
     const pref = new Preference(client)
     const baseUrl = process.env.APP_URL || 'http://localhost:3000'
     const preference = await pref.create({ body: {
-      items: [{ title: 'Retiro de Carnaval', quantity: 1, unit_price: input.amountCents / 100 }],
+      items: [{ id: input.orderId, title: 'Retiro de Carnaval', quantity: 1, unit_price: input.amountCents / 100, currency_id: 'BRL' }],
       external_reference: input.orderId,
       back_urls: { success: `${baseUrl}/user`, failure: `${baseUrl}/tickets`, pending: `${baseUrl}/tickets` },
       auto_return: 'approved',
