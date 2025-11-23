@@ -6,6 +6,7 @@ type CreatePaymentInput = {
   orderId: string
   amountCents: number
   method: 'PIX' | 'CARD' | 'BOLETO'
+  baseUrl?: string
 }
 
 export async function createPayment(input: CreatePaymentInput) {
@@ -26,7 +27,7 @@ export async function createPayment(input: CreatePaymentInput) {
   if (useMP) {
     const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN as string })
     const pref = new Preference(client)
-    const baseUrl = process.env.APP_URL || 'http://localhost:3000'
+    const baseUrl = input.baseUrl || process.env.APP_URL || 'http://localhost:3000'
     const preference = await pref.create({ body: {
       items: [{ id: input.orderId, title: 'Retiro de Carnaval', quantity: 1, unit_price: input.amountCents / 100, currency_id: 'BRL' }],
       external_reference: input.orderId,

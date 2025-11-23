@@ -20,7 +20,8 @@ export async function POST(req: Request) {
     await prisma.orderItem.create({ data: { orderId: order.id, ticketTypeId: tt.id, quantity: it.quantity, unitCents: tt.priceCents } })
   }
   await prisma.order.update({ where: { id: order.id }, data: { totalCents: total } })
-  const pay = await createPayment({ orderId: order.id, amountCents: total, method })
+  const origin = new URL(req.url).origin
+  const pay = await createPayment({ orderId: order.id, amountCents: total, method, baseUrl: origin })
   const payment = await prisma.payment.create({ data: { orderId: order.id, provider: pay.provider, providerRef: (pay as any).providerRef || null, status: 'PENDING', method, pixQrData: (pay as any).pixQrData || null, boletoNumber: (pay as any).boletoNumber || null } })
   return NextResponse.json({ orderId: order.id, totalCents: total, payment: { ...payment, initPoint: (pay as any).initPoint || null } })
 }
